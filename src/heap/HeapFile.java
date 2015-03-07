@@ -4,8 +4,6 @@ import chainexception.ChainException;
 import global.RID;
 
 public class HeapFile {
-	public void test(){}
-	
 	public HeapFile(String name){}
 	
 	public RID insertRecord(byte[] record) throws ChainException{
