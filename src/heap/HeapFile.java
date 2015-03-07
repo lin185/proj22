@@ -1,10 +1,19 @@
 package heap;
 
+import java.util.Arrays;
+
 import chainexception.ChainException;
+import global.GlobalConst;
+import global.Minibase;
+import global.Page;
+import global.PageId;
 import global.RID;
 
 public class HeapFile {
-	public HeapFile(String name){}
+	
+	public HeapFile(String name){
+		
+	}
 	
 	public RID insertRecord(byte[] record) throws ChainException{
 		RID rid = null;
