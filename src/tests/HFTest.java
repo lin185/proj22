@@ -103,7 +103,6 @@ class HFDriver extends TestDriver implements GlobalConst
 		System.out.println ("  - Create a heap file\n");
 		try {
 			f = new HeapFile("file_1");
-			return true;
 		}
 		catch (Exception e) {
 			status = FAIL;
@@ -792,6 +791,7 @@ class HFDriver extends TestDriver implements GlobalConst
 		//if (!test4()) { _passAll = FAIL; }
 		//if (!test5()) { _passAll = FAIL; }
 		//if (!test6()) { _passAll = FAIL; }
+
 
 		return _passAll;
 	}
