@@ -3,10 +3,9 @@ package tests;
 import global.GlobalConst;
 import global.Minibase;
 
-import java.io.*;
-import java.util.*;
-import java.lang.*;
-import chainexception.*;
+import java.io.IOException;
+
+import chainexception.ChainException;
 
 //    Major Changes:
 //    1. Change the return type of test() functions from 'int' to 'boolean'
