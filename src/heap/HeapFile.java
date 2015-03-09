@@ -17,11 +17,12 @@ public class HeapFile {
 	ArrayList<PageId> heap;
 	ArrayList<PageId> insertOrder;
 	int records_count;
-	
+	String  filename;	
 	
 	public HeapFile(String name){
 		records_count = 0;
 		insertOrder = new ArrayList<PageId>(); 
+		filename = name;
 		heap = new ArrayList<PageId>();
 		PageId rootPageId = Minibase.DiskManager.get_file_entry(name);
 		if( rootPageId == null )	{ 
@@ -105,28 +106,42 @@ public class HeapFile {
 	private void buildHeapArray(HFPage rootHFPage){
 		LinkedList<HFPage> q = new LinkedList<HFPage>();
 		q.add(rootHFPage);
+		//System.out.printf("RootId: %d RootPre %d RootNext %d\n",  rootHFPage.getCurPage().pid, rootHFPage.getPrevPage().pid, rootHFPage.getNextPage().pid);
 		HFPage root;
 		while(!q.isEmpty()){
-			root = q.removeFirst();
+					root = q.remove(0);
+
+		/*System.out.println("==heapId====");
+			for(int i = 0; i < q.size(); i++){
+				System.out.println(q.get(i).getCurPage().pid);
+			}
+			System.out.println("==========");
+*/
 			records_count+= root.getSlotCount();
 			//pushing all the child node in the heapArray and queue
-			PageId leftChild = rootHFPage.getPrevPage();
-			PageId rightChild = rootHFPage.getNextPage();
+//		System.out.printf("RootId: %d RootPre %d RootNext %d\n",  root.getCurPage().pid, root.getPrevPage().pid, root.getNextPage().pid);
+			PageId leftChild = root.getPrevPage();
+			PageId rightChild = root.getNextPage();
 			HFPage leftChildHFPage = new HFPage();
 			HFPage rightChildHFPage = new HFPage();
 			if(leftChild.pid != GlobalConst.INVALID_PAGEID)
 				Minibase.BufferManager.pinPage(leftChild, leftChildHFPage, false);
 			if(rightChild.pid != GlobalConst.INVALID_PAGEID)
 				Minibase.BufferManager.pinPage(rightChild, rightChildHFPage, false);
-			//Minibase.BufferManager.unpinPage(root.getCurPage(), true);
+			System.out.printf("left %d, right %d", leftChild.pid, rightChild.pid);
 			if(leftChild.pid != GlobalConst.INVALID_PAGEID){
 				heap.add(leftChild);
-				q.add(leftChildHFPage);
+				q.addLast(leftChildHFPage);
+				Minibase.BufferManager.unpinPage(leftChild, false);
 			}
 			if(rightChild.pid != GlobalConst.INVALID_PAGEID){
-				heap.add(leftChild);
-				q.add(rightChildHFPage);
+				heap.add(rightChild);
+				q.addLast(rightChildHFPage);
+				Minibase.BufferManager.unpinPage(rightChild, false);
 			}
+		
+			
+			
 		}
 	}
 	public RID insertRecord(byte[] record) throws ChainException{
@@ -134,9 +149,7 @@ public class HeapFile {
 		
 		//PageId cpid = new PageId(rootPageId.pid);
 		//PageId ppid = new PageId(GlobalConst.INVALID_PAGEID);
-		
-		
-		//HFPage curHFPage = rootHFPage;
+		//ootNexte curHFPage = rootHFPage;
 		PageId rootPageId = heap.get(0);
 		HFPage rootHFPage = new HFPage();
 		Minibase.BufferManager.pinPage(rootPageId, rootHFPage, false);
@@ -180,7 +193,12 @@ public class HeapFile {
 			//update heap, swap downward
 			updateHeapDownward();
 		}
-		
+		PageId newRootId = heap.get(0);
+		HFPage newRootHFP = new HFPage();
+		Minibase.BufferManager.pinPage(newRootId, newRootHFP, false);
+		Minibase.DiskManager.delete_file_entry(filename);
+		Minibase.DiskManager.add_file_entry(filename, newRootId);
+		Minibase.BufferManager.unpinPage(newRootId, true);
 		Minibase.BufferManager.unpinPage(rootPageId, true);
 		records_count++;
 		return rid;

@@ -1,6 +1,5 @@
 package tests;
 
-
 import global.Convert;
 import global.GlobalConst;
 import global.Minibase;
@@ -30,7 +29,7 @@ class HFDriver extends TestDriver implements GlobalConst
 	public HFDriver () {
 		super("hptest");
 		choice = 100;      // big enough for file to occupy > 1 data page
-		//choice = 2000;   // big enough for file to occupy > 1 directory page
+		choice = 2000;   // big enough for file to occupy > 1 directory page
 		//choice = 5;
 	}
 
@@ -787,11 +786,11 @@ class HFDriver extends TestDriver implements GlobalConst
 		boolean _passAll = OK;
 
 		if (!test1()) { _passAll = FAIL; }
-		//if (!test2()) { _passAll = FAIL; }
-		//if (!test3()) { _passAll = FAIL; }
-		//if (!test4()) { _passAll = FAIL; }
-		//if (!test5()) { _passAll = FAIL; }
-		//if (!test6()) { _passAll = FAIL; }
+		if (!test2()) { _passAll = FAIL; }
+		if (!test3()) { _passAll = FAIL; }
+		if (!test4()) { _passAll = FAIL; }
+		if (!test5()) { _passAll = FAIL; }
+		if (!test6()) { _passAll = FAIL; }
 
 
 		return _passAll;

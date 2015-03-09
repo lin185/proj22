@@ -1,0 +1,158 @@
+/usr/bin/javac  -cp .:..:lib/heapAssign.jar -d bin src/*/*.java
+/usr/bin/java  -cp .:..:lib/heapAssign.jar:bin tests.HFTest
+
+Running Heap File tests....
+
+Creating database...
+Replacer: CLOCK
+
+  Test 1: Insert and scan fixed-size records
+
+  - Create a heap file
+
+------------HEAP------------
+Pid[3]: free(1004), rcnt(0), left(-1), right(-1)
+----------------------------
+  - Add 100 records to the file
+
+Insert Record! RID<3, 0>
+Insert Record! RID<3, 1>
+Insert Record! RID<3, 2>
+Insert Record! RID<3, 3>
+Insert Record! RID<3, 4>
+Insert Record! RID<3, 5>
+Insert Record! RID<3, 6>
+Insert Record! RID<3, 7>
+Insert Record! RID<3, 8>
+Insert Record! RID<3, 9>
+Insert Record! RID<3, 10>
+Insert Record! RID<3, 11>
+Insert Record! RID<3, 12>
+Insert Record! RID<3, 13>
+Insert Record! RID<3, 14>
+Insert Record! RID<3, 15>
+Insert Record! RID<3, 16>
+Insert Record! RID<3, 17>
+Insert Record! RID<3, 18>
+Insert Record! RID<3, 19>
+Insert Record! RID<3, 20>
+Insert Record! RID<3, 21>
+Insert Record! RID<3, 22>
+Insert Record! RID<3, 23>
+Insert Record! RID<3, 24>
+Insert Record! RID<3, 25>
+Insert Record! RID<3, 26>
+NO ENOUGH SPACE!
+------------HEAP------------
+Pid[4]: free(968), rcnt(1), left(3), right(-1)
+	Pid[3]: free(32), rcnt(27), left(-1), right(-1)
+----------------------------
+Insert Record! RID<4, 1>
+Insert Record! RID<4, 2>
+Insert Record! RID<4, 3>
+Insert Record! RID<4, 4>
+Insert Record! RID<4, 5>
+Insert Record! RID<4, 6>
+Insert Record! RID<4, 7>
+Insert Record! RID<4, 8>
+Insert Record! RID<4, 9>
+Insert Record! RID<4, 10>
+Insert Record! RID<4, 11>
+Insert Record! RID<4, 12>
+Insert Record! RID<4, 13>
+Insert Record! RID<4, 14>
+Insert Record! RID<4, 15>
+Insert Record! RID<4, 16>
+Insert Record! RID<4, 17>
+Insert Record! RID<4, 18>
+Insert Record! RID<4, 19>
+Insert Record! RID<4, 20>
+Insert Record! RID<4, 21>
+Insert Record! RID<4, 22>
+Insert Record! RID<4, 23>
+Insert Record! RID<4, 24>
+Insert Record! RID<4, 25>
+Insert Record! RID<4, 26>
+NO ENOUGH SPACE!
+------------HEAP------------
+Pid[5]: free(968), rcnt(1), left(3), right(4)
+	Pid[3]: free(32), rcnt(27), left(-1), right(-1)
+	Pid[4]: free(32), rcnt(27), left(-1), right(-1)
+----------------------------
+Insert Record! RID<5, 1>
+Insert Record! RID<5, 2>
+Insert Record! RID<5, 3>
+Insert Record! RID<5, 4>
+Insert Record! RID<5, 5>
+Insert Record! RID<5, 6>
+Insert Record! RID<5, 7>
+Insert Record! RID<5, 8>
+Insert Record! RID<5, 9>
+Insert Record! RID<5, 10>
+Insert Record! RID<5, 11>
+Insert Record! RID<5, 12>
+Insert Record! RID<5, 13>
+Insert Record! RID<5, 14>
+Insert Record! RID<5, 15>
+Insert Record! RID<5, 16>
+Insert Record! RID<5, 17>
+Insert Record! RID<5, 18>
+Insert Record! RID<5, 19>
+Insert Record! RID<5, 20>
+Insert Record! RID<5, 21>
+Insert Record! RID<5, 22>
+Insert Record! RID<5, 23>
+Insert Record! RID<5, 24>
+Insert Record! RID<5, 25>
+Insert Record! RID<5, 26>
+NO ENOUGH SPACE!
+------------HEAP------------
+Pid[6]: free(968), rcnt(1), left(5), right(4)
+	Pid[5]: free(32), rcnt(27), left(3), right(-1)
+		Pid[3]: free(32), rcnt(27), left(-1), right(-1)
+	Pid[4]: free(32), rcnt(27), left(-1), right(-1)
+----------------------------
+Insert Record! RID<6, 1>
+Insert Record! RID<6, 2>
+Insert Record! RID<6, 3>
+Insert Record! RID<6, 4>
+Insert Record! RID<6, 5>
+Insert Record! RID<6, 6>
+Insert Record! RID<6, 7>
+Insert Record! RID<6, 8>
+Insert Record! RID<6, 9>
+Insert Record! RID<6, 10>
+Insert Record! RID<6, 11>
+Insert Record! RID<6, 12>
+Insert Record! RID<6, 13>
+Insert Record! RID<6, 14>
+Insert Record! RID<6, 15>
+Insert Record! RID<6, 16>
+Insert Record! RID<6, 17>
+Insert Record! RID<6, 18>
+  - Scan the records just inserted
+
+
+  Test 2: Delete fixed-size records
+
+  - Open the same heap file as test 1
+
+RootId: 6 RootPre 5 RootNext 4
+==heapId====
+==========
+RootId: 6 RootPre 5 RootNext 4
+left 5, right 4==heapId====
+4
+==========
+RootId: 5 RootPre 3 RootNext -1
+left 3, right -1==heapId====
+3
+==========
+RootId: 4 RootPre -1 RootNext -1
+left -1, right -1==heapId====
+==========
+RootId: 3 RootPre -1 RootNext -1
+left -1, right -1Global_count: 100
+[6, 5, 4, 3]
+  - Delete half the records
+
