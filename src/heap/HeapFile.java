@@ -15,12 +15,13 @@ public class HeapFile {
 	//HFPage rootHFPage;
 	//PageId rootPageId;
 	ArrayList<PageId> heap;
-	
+	ArrayList<PageId> insertOrder;
 	int records_count;
 	
 	
 	public HeapFile(String name){
 		records_count = 0;
+		insertOrder = new ArrayList<PageId>(); 
 		heap = new ArrayList<PageId>();
 		PageId rootPageId = Minibase.DiskManager.get_file_entry(name);
 		if( rootPageId == null )	{ 
@@ -35,6 +36,7 @@ public class HeapFile {
 			rootHFPage.setPrevPage(leftChild);
 			
 			heap.add(rootPageId);
+			insertOrder.add(rootPageId);
 			//heap.add(leftChild);
 			//heap.add(rightChild);
 			
@@ -161,7 +163,7 @@ public class HeapFile {
 			
 			//insert new page id into heap
 			heap.add(newPageId);
-			
+			insertOrder.add(newPageId);
 			//update heap, swap upward
 			updateHeapUpward();
 			
@@ -415,7 +417,7 @@ public class HeapFile {
 	}
 	
 	public HeapScan openScan() {
-		HeapScan hs = null;
+		HeapScan hs = new HeapScan(insertOrder);		
 		return hs;
 	}
 	

@@ -1,7 +1,9 @@
 package heap;
 
+import java.util.Arrays;
+
 public class Tuple {
-	byte[] tuple;
+	byte[] data;
 	
 	public Tuple(byte[] byteArray, int i, int recLength) {
 		// TODO Auto-generated constructor stub
@@ -10,13 +12,19 @@ public class Tuple {
 	public Tuple() {
 		// TODO Auto-generated constructor stub
 	}
+	public Tuple(byte[] data) {
+		//this.data = new byte[data.length];
+		this.data = Arrays.copyOf(data, data.length);
+	}
 
 	public int getLength(){
-		return 0;
+		return data.length;
 	}
 
 	public byte[] getTupleByteArray() {
 		// TODO Auto-generated method stub
-		return null;
+		return data;
 	}
+
+
 }
