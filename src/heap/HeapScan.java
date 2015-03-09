@@ -14,12 +14,6 @@ public class HeapScan {
 	int cur_slotno;
 	int cur_PageCount;
 	public HeapScan(ArrayList<PageId> insertOrder) {
-		/*this.root_pid = root_pid;
-		//pin the root page
-		root_hfp = new HFPage();
-		Minibase.BufferManager.pinPage(root_pid, root_hfp, false);
-		System.out.printf("Construct new HeapScan  root_hfp_id: %d\n", root_hfp.getCurPage().pid);
-		*/
 		this.insertOrder = insertOrder;
 		cur_hfp = new HFPage();
 		Minibase.BufferManager.pinPage(insertOrder.get(0), cur_hfp, false);

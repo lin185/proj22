@@ -47,9 +47,7 @@ public class HeapFile {
 			
 			heap.add(rootPageId);
 			insertOrder.add(rootPageId);
-			//heap.add(leftChild);
-			//heap.add(rightChild);
-			
+
 			Minibase.DiskManager.add_file_entry(name, rootPageId);
 			Minibase.BufferManager.unpinPage(rootPageId, true);
 			
@@ -69,53 +67,14 @@ public class HeapFile {
 			
 			//reconstruct root directory
 			buildOrderArray();
-			
-			//System.out.println()
+	
 			
 			//System.out.println("Global_count: " + records_count + "\n" + heap.toString() );
 		}
 	
 		printHeap(0, 0);
 
-		/*System.out.println("HeapFile Constructor");
-
 		
-		//open hf1 file, if not exsit create it
-		PageId pid = Minibase.DiskManager.get_file_entry("hf1");
-		HFPage hfpage = new HFPage();
-		if(pid == null) {
-			pid = Minibase.BufferManager.newPage(hfpage, 1);
-			Minibase.DiskManager.add_file_entry("hf1", pid);
-		}
-		
-		hfpage.setCurPage(pid);
-
-		//HFPage hfpage = new HFPage();
-		//hfpage.setCurPage(pid);
-		PageId nextpageid = new PageId(GlobalConst.INVALID_PAGEID);
-		PageId prevpageid = new PageId(GlobalConst.INVALID_PAGEID);
-		hfpage.setNextPage(nextpageid);
-		hfpage.setPrevPage(prevpageid);
-		
-		RID rid = hfpage.insertRecord("hello".getBytes());
-
-		hfpage.print();
-	
-		//page.setData(hfpage.getData());
-		//Minibase.BufferManager.unpinPage(pid, true);
-
-		PageId newpid = Minibase.DiskManager.get_file_entry("hf1");
-		if(newpid != null) {
-			System.out.println("hf1 exists.");
-			HFPage newhfpage = new HFPage();
-			Minibase.BufferManager.pinPage(hfpage.getCurPage(), newhfpage, false);
-			newhfpage.print();
-		
-		}
-		Minibase.BufferManager.unpinPage(newpid, true);
-		HeapFile h = new HeapFile("hf1");
-*/
-
 	}
 	private void buildOrderArray() {
 		root_directory_pid = Minibase.DiskManager.get_file_entry(filename+"_directory");
@@ -150,13 +109,6 @@ public class HeapFile {
 		HFPage root;
 		while(!q.isEmpty()){
 			root = q.remove(0);
-
-		/*System.out.println("==heapId====");
-			for(int i = 0; i < q.size(); i++){
-				System.out.println(q.get(i).getCurPage().pid);
-			}
-			System.out.println("==========");
-*/
 			
 			int slotcount = root.getSlotCount();
 			for(int i=0; i<slotcount; i++) {
@@ -167,7 +119,7 @@ public class HeapFile {
 			
 			
 			//pushing all the child node in the heapArray and queue
-//		System.out.printf("RootId: %d RootPre %d RootNext %d\n",  root.getCurPage().pid, root.getPrevPage().pid, root.getNextPage().pid);
+
 			PageId leftChild = root.getPrevPage();
 			PageId rightChild = root.getNextPage();
 			HFPage leftChildHFPage = new HFPage();
@@ -176,7 +128,7 @@ public class HeapFile {
 				Minibase.BufferManager.pinPage(leftChild, leftChildHFPage, false);
 			if(rightChild.pid != GlobalConst.INVALID_PAGEID)
 				Minibase.BufferManager.pinPage(rightChild, rightChildHFPage, false);
-			//System.out.printf("left %d, right %d", leftChild.pid, rightChild.pid);
+
 			if(leftChild.pid != GlobalConst.INVALID_PAGEID){
 				heap.add(leftChild);
 				q.addLast(leftChildHFPage);
@@ -382,17 +334,9 @@ public class HeapFile {
 			//Swapping
 			if(left_freespace > right_freespace && left_freespace > parent_freespace) {
 					//swap left child with parent
-					/*updateHFPagePtr(parent_hfp, left_index);
-					updateHFPagePtr(left_hfp, parent_index);
-					parent_index = left_index;
-					Minibase.BufferManager.unpinPage(left_pid, true);*/
 					target_index = left_index;
 			} else if(right_freespace > left_freespace && right_freespace > parent_freespace) {
 					//swap right child with parent
-					/*updateHFPagePtr(parent_hfp, right_index);
-					updateHFPagePtr(right_hfp, parent_index);
-					parent_index = right_index;
-					Minibase.BufferManager.unpinPage(right_pid, true);*/
 					target_index = right_index;
 			} else {
 				Minibase.BufferManager.unpinPage(parent_pid, false);
