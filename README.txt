@@ -1,10 +1,30 @@
-ChiaHao Chen
-Binhao Lin
+ChiaHao Chen 0027361299
+Binhao Lin  0024199967
+
+WORK LOAD DISTRIBUTION
+======================
+Basically work load was spread evenly, we both helped each other on the problem that we are working on so there 
+is no clear cut work assignment, but to give a rough break down:
+
+Chiahao Chen implemented the CustomHashTable and unpinPage in part1
+Binahao Lin implemented BufMgr constructor, pinPage and new page in part1
+All other methods were implemented together.
+
+Chiahao Chen implemented the reconstruction of Binary Heap Tree and the construction of Directory. 
+Binhao Lin implemented the construction of Binary Heap Tree, repositioning of the Heap Tree.
+All other methods were implemented together.
+
+All implementation details were discussed together before implementing it.
+
+
+
+DESIGN OVERVIEW
+===============
 
 For Storing HFPages we decided to use a Binary Max Heap Tree data structure.
 
 We are using "NextPage" and "PrevPage" pageId pointers in HFPage class as
-ouright and left child to simulate our Binary Max Heap Tree without changing the structure of the HFPage class. 
+our right and left child to simulate our Binary Max Heap Tree without changing the structure of the HFPage class. 
 
 we are also using an ArrayList as our Directory to keep track of the order of
 HFPages, and we store this Directory into the disk in case we need to
