@@ -56,26 +56,8 @@ public class HeapScan {
 				cur_slotno++;
 			}
 		}
-		/*if(cur_slotno == cur_hfp.getSlotCount()){
-			cur_PageCount++;
-			if(cur_PageCount == insertOrder.size()){
-				for(int i = 0; i < insertOrder.size(); i++)
-					Minibase.BufferManager.unpinPage(insertOrder.get(i), false);
-				return null;
-			}
-			Minibase.BufferManager.pinPage(insertOrder.get(cur_PageCount), cur_hfp, false);
-			cur_slotno = 0;
-		}
-		
-		RID tuple_rid = new RID(cur_hfp.getCurPage(), cur_slotno);
-		//System.out.printf("HeapScan getNext(rid) --- [%d, %d]\n", tuple_rid.pageno.pid, tuple_rid.slotno);
-		byte[] data = cur_hfp.selectRecord(tuple_rid);
-		//System.out.println(Arrays.toString(data));
-		Tuple t = new Tuple(data);
-		rid.copyRID(tuple_rid);
-		cur_slotno++;
-		return t;*/
 	}
 	
-	public void close() throws ChainException{}
+	public void close() throws ChainException{
+	}
 }

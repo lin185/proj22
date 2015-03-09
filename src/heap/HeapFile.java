@@ -193,15 +193,12 @@ public class HeapFile {
 	}
 	
 	
-	public RID insertRecord(byte[] record) throws ChainException{
+	public RID insertRecord(byte[] record) throws SpaceNotAvailableException{
 		if(record.length > GlobalConst.MAX_TUPSIZE)
-			throw new SpaceNotAvailableException(null, "SpaceNotAvailableException");
+			throw new SpaceNotAvailableException(null);
 		
 		RID rid = new RID();
 		
-		//PageId cpid = new PageId(rootPageId.pid);
-		//PageId ppid = new PageId(GlobalConst.INVALID_PAGEID);
-		//ootNexte curHFPage = rootHFPage;
 		PageId rootPageId = heap.get(0);
 		HFPage rootHFPage = new HFPage();
 		Minibase.BufferManager.pinPage(rootPageId, rootHFPage, false);
@@ -329,9 +326,9 @@ public class HeapFile {
 		Minibase.BufferManager.unpinPage(parent_pid, true);
 		
 		
-		if(UPDATED) 
+		if(UPDATED){ 
 			printHeap(0, 0);
-
+		}
 	}
 	
 	private void updateHeapDownward() {
@@ -490,13 +487,14 @@ public class HeapFile {
 		return t;
 	}
 	
-	public boolean updateRecord(RID rid, Tuple newRecord) throws ChainException {
+	public boolean updateRecord(RID rid, Tuple newRecord) throws InvalidUpdateException {
 	
 		Tuple t = getRecord(rid);
-		//System.out.println("oldRecordSize: " + t.getLength() + "newRecord: " + newRecord.getLength());
-		if(t.getLength() != newRecord.getLength())
-			throw new InvalidUpdateException(null, "InvalidUpdate");;
-		
+		System.out.println("oldRecordSize: " + t.getLength() + "newRecord: " + newRecord.getLength());
+		if(t.getLength() != newRecord.getLength()){
+		// throw  new Exception( "Invalid");
+				throw new InvalidUpdateException();
+		}
 		HFPage hfp = new HFPage();
 		Minibase.BufferManager.pinPage(rid.pageno, hfp, false);
 		hfp.updateRecord(rid, newRecord);
