@@ -4,7 +4,10 @@ import global.GlobalConst;
 import global.Minibase;
 import global.PageId;
 import global.RID;
+
 import java.util.ArrayList;
+import java.util.LinkedList;
+
 import chainexception.ChainException;
 
 
@@ -17,7 +20,8 @@ public class HeapFile {
 	
 	
 	public HeapFile(String name){
-		
+		records_count = 0;
+		heap = new ArrayList<PageId>();
 		PageId rootPageId = Minibase.DiskManager.get_file_entry(name);
 		if( rootPageId == null )	{ 
 			//Root Heap File does not exist
@@ -30,7 +34,6 @@ public class HeapFile {
 			rootHFPage.setNextPage(rightChild);
 			rootHFPage.setPrevPage(leftChild);
 			
-			heap = new ArrayList<PageId>();
 			heap.add(rootPageId);
 			//heap.add(leftChild);
 			//heap.add(rightChild);
@@ -38,18 +41,27 @@ public class HeapFile {
 			Minibase.DiskManager.add_file_entry(name, rootPageId);
 			Minibase.BufferManager.unpinPage(rootPageId, true);
 			
-			records_count = 0;
+
 		} else {
 			//Root Heap File exists
-			//Minibase.BufferManager.pinPage(rootPageId, rootHFPage, false);
-			
+			HFPage rootHFPage = new HFPage();
+			Minibase.BufferManager.pinPage(rootPageId, rootHFPage, false);
+			heap.add(rootPageId);
+			/**********************
+			might need to unpind root in buildHeapArray
+			**********************/
+
+			buildHeapArray(rootHFPage);
 			//update heap
+			System.out.println("Global_count: " + records_count + "\n" + heap.toString());
 			//update global count
+			return;
 		}
 	
 		printHeap(0, 0);
 
 		/*System.out.println("HeapFile Constructor");
+
 		
 		//open hf1 file, if not exsit create it
 		PageId pid = Minibase.DiskManager.get_file_entry("hf1");
@@ -63,8 +75,8 @@ public class HeapFile {
 
 		//HFPage hfpage = new HFPage();
 		//hfpage.setCurPage(pid);
-		PageId nextpageid = new PageId(100);
-		PageId prevpageid = new PageId(50);
+		PageId nextpageid = new PageId(GlobalConst.INVALID_PAGEID);
+		PageId prevpageid = new PageId(GlobalConst.INVALID_PAGEID);
 		hfpage.setNextPage(nextpageid);
 		hfpage.setPrevPage(prevpageid);
 		
@@ -82,9 +94,39 @@ public class HeapFile {
 			Minibase.BufferManager.pinPage(hfpage.getCurPage(), newhfpage, false);
 			newhfpage.print();
 		
-		}*/
+		}
+		Minibase.BufferManager.unpinPage(newpid, true);
+		HeapFile h = new HeapFile("hf1");
+*/
+
 	}
-	
+	private void buildHeapArray(HFPage rootHFPage){
+		LinkedList<HFPage> q = new LinkedList<HFPage>();
+		q.add(rootHFPage);
+		HFPage root;
+		while(!q.isEmpty()){
+			root = q.removeFirst();
+			records_count+= root.getSlotCount();
+			//pushing all the child node in the heapArray and queue
+			PageId leftChild = rootHFPage.getPrevPage();
+			PageId rightChild = rootHFPage.getNextPage();
+			HFPage leftChildHFPage = new HFPage();
+			HFPage rightChildHFPage = new HFPage();
+			if(leftChild.pid != GlobalConst.INVALID_PAGEID)
+				Minibase.BufferManager.pinPage(leftChild, leftChildHFPage, false);
+			if(rightChild.pid != GlobalConst.INVALID_PAGEID)
+				Minibase.BufferManager.pinPage(rightChild, rightChildHFPage, false);
+			//Minibase.BufferManager.unpinPage(root.getCurPage(), true);
+			if(leftChild.pid != GlobalConst.INVALID_PAGEID){
+				heap.add(leftChild);
+				q.add(leftChildHFPage);
+			}
+			if(rightChild.pid != GlobalConst.INVALID_PAGEID){
+				heap.add(leftChild);
+				q.add(rightChildHFPage);
+			}
+		}
+	}
 	public RID insertRecord(byte[] record) throws ChainException{
 		RID rid = new RID();
 		

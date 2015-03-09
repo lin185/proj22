@@ -1,5 +1,6 @@
 package tests;
 
+
 import global.GlobalConst;
 import global.Minibase;
 
