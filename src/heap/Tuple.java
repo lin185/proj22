@@ -6,23 +6,34 @@ public class Tuple {
 	byte[] data;
 	
 	public Tuple(byte[] byteArray, int i, int recLength) {
-		// TODO Auto-generated constructor stub
+		int size = recLength - i;
+		data = new byte[size];
+		
+		if(size > byteArray.length)
+			size = byteArray.length;
+		
+		for(int j = 0; j < size; j++){
+			data[j] = byteArray[i++];
+		}
 	}
 
 	public Tuple() {
-		// TODO Auto-generated constructor stub
+		data = null;
 	}
+	
 	public Tuple(byte[] data) {
-		//this.data = new byte[data.length];
+		this.data = new byte[data.length];
 		this.data = Arrays.copyOf(data, data.length);
 	}
 
 	public int getLength(){
+		if(data == null)
+			return 0;
+		
 		return data.length;
 	}
 
 	public byte[] getTupleByteArray() {
-		// TODO Auto-generated method stub
 		return data;
 	}
 
