@@ -208,11 +208,20 @@ public class HeapFile {
 			heap.set(parent_index, child_pid);
 			heap.set(child_index, temp_pid);
 			
+			
 			//update parent HFPage pointers (setPrevPage, setNextPage)
-			updateHFPagePtr(parent_hfp, parent_index);
+			PageId new_parent_pid = heap.get(parent_index);
+			HFPage new_parent_hfp = new HFPage();
+			Minibase.BufferManager.pinPage(new_parent_pid, new_parent_hfp, false);
+			updateHFPagePtr(new_parent_hfp, parent_index);
+			Minibase.BufferManager.unpinPage(new_parent_pid, true);
 			
 			//update child HFPage pointers (setPrevPage, setNextPage)
-			updateHFPagePtr(child_hfp, child_index);
+			PageId new_child_pid = heap.get(child_index);
+			HFPage new_child_hfp = new HFPage();
+			Minibase.BufferManager.pinPage(new_child_pid, new_child_hfp, false);
+			updateHFPagePtr(new_child_hfp, child_index);
+			Minibase.BufferManager.unpinPage(new_child_pid, true);
 			
 			//unpin pages after previous/next pointers are updated
 			Minibase.BufferManager.unpinPage(child_pid, true);
@@ -372,7 +381,9 @@ public class HeapFile {
 		Minibase.BufferManager.pinPage(pid, hfp, false);
 		System.out.printf("Pid[%d]: ", pid.pid);
 		System.out.printf("free(%d), ", hfp.getFreeSpace());
-		System.out.printf("rcnt(%d)", hfp.getSlotCount());
+		System.out.printf("rcnt(%d), ", hfp.getSlotCount());
+		System.out.printf("left(%d), ", hfp.getPrevPage().pid);
+		System.out.printf("right(%d)", hfp.getNextPage().pid);
 		Minibase.BufferManager.unpinPage(pid, false);
 		System.out.printf("\n");
 		
