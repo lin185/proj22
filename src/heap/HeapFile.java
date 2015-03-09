@@ -13,6 +13,9 @@ public class HeapFile {
 	//PageId rootPageId;
 	ArrayList<PageId> heap;
 	
+	int records_count;
+	
+	
 	public HeapFile(String name){
 		
 		PageId rootPageId = Minibase.DiskManager.get_file_entry(name);
@@ -35,6 +38,7 @@ public class HeapFile {
 			Minibase.DiskManager.add_file_entry(name, rootPageId);
 			Minibase.BufferManager.unpinPage(rootPageId, true);
 			
+			records_count = 0;
 		} else {
 			//Root Heap File exists
 			//Minibase.BufferManager.pinPage(rootPageId, rootHFPage, false);
@@ -43,7 +47,8 @@ public class HeapFile {
 			//update global count
 		}
 	
-	
+		printHeap(0, 0);
+
 		/*System.out.println("HeapFile Constructor");
 		
 		//open hf1 file, if not exsit create it
@@ -118,13 +123,8 @@ public class HeapFile {
 			//update heap, swap upward
 			updateHeapUpward();
 			
-			
-			
-			
-			
 			Minibase.BufferManager.unpinPage(newPageId, true);
 
-			
 		} else {
 			//We have enough space, insert the records. 
 			rid = rootHFPage.insertRecord(record);
@@ -134,18 +134,17 @@ public class HeapFile {
 				System.out.printf("error rid == null\n");
 			
 			//update heap, swap downward
-			
-			
-			
-
+			updateHeapDownward();
 		}
 		
 		Minibase.BufferManager.unpinPage(rootPageId, true);
+		records_count++;
 		return rid;
 	}
 	
 	
 	private void updateHeapUpward() {
+		boolean UPDATED = false;
 		
 		int child_index = heap.size() - 1;
 		int parent_index = findParent(child_index);
@@ -186,12 +185,115 @@ public class HeapFile {
 			
 			Minibase.BufferManager.pinPage(child_pid, child_hfp, false);
 			Minibase.BufferManager.pinPage(parent_pid, parent_hfp, false);
+			
+			UPDATED = true;
 		}
 		
-		//unpin pages after previous/next pointers are updated
+		//unpin pages before return
 		Minibase.BufferManager.unpinPage(child_pid, true);
 		Minibase.BufferManager.unpinPage(parent_pid, true);
 		
+		
+		if(UPDATED) 
+			printHeap(0, 0);
+
+	}
+	
+	private void updateHeapDownward() {
+		boolean UPDATED = false;
+		
+		int parent_index = 0;
+		int left_index = 1;
+		int right_index = 2;
+		int target_index = 0;
+		
+		PageId parent_pid = null;
+		PageId left_pid = null;
+		PageId right_pid = null;
+		PageId target_pid = null;
+		
+		HFPage parent_hfp = null;
+		HFPage left_hfp = null;
+		HFPage right_hfp = null;
+		HFPage target_hfp = null;
+		
+		short parent_freespace = 0;
+		short left_freespace = 0;
+		short right_freespace = 0;
+		
+		while(true) {
+			//root hfpage object
+			parent_pid = heap.get(parent_index);
+			parent_hfp = new HFPage();	
+			Minibase.BufferManager.pinPage(parent_pid, parent_hfp, false);
+			parent_freespace = parent_hfp.getFreeSpace();
+			//
+			
+			//left child hfpage object
+			if(left_index < heap.size()) {
+				left_pid = heap.get(left_index);
+				left_hfp = new HFPage();
+				Minibase.BufferManager.pinPage(left_pid, left_hfp, false);
+				left_freespace = left_hfp.getFreeSpace();
+				Minibase.BufferManager.unpinPage(left_pid, false);
+			}
+			
+			//right child hfpage object
+			if(right_index < heap.size()) {
+				right_pid = heap.get(right_index);
+				right_hfp = new HFPage();
+				Minibase.BufferManager.pinPage(right_pid, right_hfp, false);
+				right_freespace = right_hfp.getFreeSpace();
+				Minibase.BufferManager.unpinPage(right_pid, false);
+			}
+			
+			//Swapping
+			if(left_freespace > right_freespace && left_freespace > parent_freespace) {
+					//swap left child with parent
+					/*updateHFPagePtr(parent_hfp, left_index);
+					updateHFPagePtr(left_hfp, parent_index);
+					parent_index = left_index;
+					Minibase.BufferManager.unpinPage(left_pid, true);*/
+					target_index = left_index;
+			} else if(right_freespace > left_freespace && right_freespace > parent_freespace) {
+					//swap right child with parent
+					/*updateHFPagePtr(parent_hfp, right_index);
+					updateHFPagePtr(right_hfp, parent_index);
+					parent_index = right_index;
+					Minibase.BufferManager.unpinPage(right_pid, true);*/
+					target_index = right_index;
+			} else {
+				Minibase.BufferManager.unpinPage(parent_pid, false);
+				break;
+			}
+	
+				//swap			
+				target_pid = heap.get(target_index);
+				target_hfp = new HFPage();	
+				Minibase.BufferManager.pinPage(target_pid, target_hfp, false);
+				updateHFPagePtr(parent_hfp, target_index);
+				updateHFPagePtr(target_hfp, parent_index);
+				Minibase.BufferManager.unpinPage(target_pid, false);
+				Minibase.BufferManager.unpinPage(parent_pid, false);
+				
+				//swap elements in the heap
+				PageId temp_pid = parent_pid;
+				heap.set(parent_index, target_pid);
+				heap.set(target_index, temp_pid);
+				
+				left_index = findLeftChild(parent_index);
+				right_index = findRightChild(parent_index);
+				left_freespace = 0;
+				right_freespace = 0;
+				//Minibase.BufferManager.unpinPage(parent_pid, true);
+				
+				UPDATED = true;
+		
+		}
+		
+		if(UPDATED)
+			printHeap(0, 0);
+
 	}
 	
 	private void updateHFPagePtr(HFPage hfp, int index) {
@@ -210,9 +312,35 @@ public class HeapFile {
 	}
 
 	
-	/*private void printHeap(){
+	private void printHeap(int parent_index, int tap){
+		if(parent_index >= heap.size())
+			return;
 		
-	}*/
+		int left = findLeftChild(parent_index);
+		int right = findRightChild(parent_index);
+		if(tap == 0)
+			System.out.println("------------HEAP------------");
+		
+		
+		for(int i = 0; i<tap; i++)
+			System.out.print("\t");
+		
+		PageId pid = heap.get(parent_index);
+		HFPage hfp = new HFPage();
+		Minibase.BufferManager.pinPage(pid, hfp, false);
+		System.out.printf("Pid[%d]: ", pid.pid);
+		System.out.printf("free(%d), ", hfp.getFreeSpace());
+		System.out.printf("rcnt(%d)", hfp.getSlotCount());
+		Minibase.BufferManager.unpinPage(pid, false);
+		System.out.printf("\n");
+		
+		printHeap(left, tap+1); 
+		printHeap(right, tap+1);
+		if(tap == 0)
+			System.out.println("----------------------------");
+
+		
+	}
 	
 	public Tuple getRecord(RID rid) {
 		Tuple t = null;
@@ -230,7 +358,7 @@ public class HeapFile {
 	}
 
 	public int getRecCnt(){
-		return 0;
+		return records_count;
 	}
 	
 	public HeapScan openScan() {
@@ -250,7 +378,4 @@ public class HeapFile {
 	public int findRightChild(int parent_index) {
 		return parent_index * 2 + 2;
 	}
-	
-	//public int linkParent()
-
 }
